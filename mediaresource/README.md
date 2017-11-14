@@ -1,10 +1,24 @@
-# mediaresource
+# microservice-gallery
 
 ## What it is
 A simple photo gallery microservice/HTML5 application 
 
 ## What it not is
 Completed
+
+## Architecture
+Simple Spring Boot REST service.
+
+Using HAL/Hateoas for linking.
+
+HTML5 frontend
+
+Pure Filesystem persistence & caching
+
+Json Web Tokens for Authentication 
+
+Java Imaging APIs, FASTJson 
+
 
 ## Howto
 Create directory .mediaresource in your user home, put a file config.json pointing to your pictures directory (path property):
