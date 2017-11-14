@@ -1,0 +1,24 @@
+// Global definitions of the queries
+http://localhost:8080
+Accept: application/json
+--
+
+# HATEOAS
+--
+GET /media/api/
+--
+GET /media/api/browser/alba/
+--
+GET /media/api/browser/alba/default/
+--
+GET /media/api/browser/alba/default/sony
+--
+PUT /media/api/user/login
+{
+	"username": "thomas",
+	"password": "password"
+}
+--
+Authentication: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0aG9tYXMifQ.Pl8rdbRvp9TIwKymqQZgkcJQSfpi7Y1M_b1Ze-QOBvyDlxi19XMylDfbOFFoNG7HyR0I2NwsM8jN2GTntVP5qQ
+GET /media/api/user
+

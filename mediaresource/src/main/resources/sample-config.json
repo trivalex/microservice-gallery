@@ -1,0 +1,13 @@
+{
+	"album": {
+		"dirFilter": "\\.cache",
+		"cacheDirPattern": "{1}/.cache/{2}/{3}.{4}.{5}",
+		/* 0=album.name 1=album.path, 2=path, 3=fileName, 4=qualifier, 5=extension */
+		"alba": [
+			{
+				"name": "default",
+				"path": "album",
+			}
+		]
+	}
+}
