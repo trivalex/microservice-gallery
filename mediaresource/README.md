@@ -19,6 +19,73 @@ Json Web Tokens for Authentication
 
 Java Imaging APIs, FASTJson 
 
+## HAL
+The frontend relies on links defined by the backend.
+
+/api/
+
+   ```json
+   {
+	"_links": {
+		"alba": {
+			"method" : "GET",
+			"href" : "/media/api/browser/alba/"
+		}
+	}
+   }
+   ```
+
+/media/api/browser/alba/ returns an array of album objects. each of those has a link:
+
+
+   ```json
+   ..
+	"_links": {
+		"root": {
+			"method" : "GET",
+			"href" : "/media/api/browser/alba/default/"
+		}
+	...
+	}
+   ```
+
+This leads to a recursive folder structure containing "folders" and "images". 
+
+A folder is navigationable by its self link:
+
+   ```json
+   ..
+	"_links": {
+		"self": {
+			"method" : "GET",
+			"href" : "/media/api/browser/alba/default/pictures"
+		}
+	...
+	}
+   ```
+
+An image provides its download links, currently only "icon" and "preview" are used by the frontend
+
+   ```json
+   ..
+	"_links": {
+		"icon": {
+			"method" : "GET",
+			"href" : "/media/api/browser/alba/default/pictures/some.jpg/ICON"
+		},
+		"preview": {
+			"method" : "GET",
+			"href" : "/media/api/browser/alba/default/pictures/some.jpg/PREVIEW"
+		},
+		"download": {
+			"method" : "GET",
+			"href" : "/media/api/browser/alba/default/pictures/some.jpg/download"
+		}
+	...
+	}
+   ```
+
+
 
 ## Howto
 Create directory .mediaresource in your user home, put a file config.json pointing to your pictures directory (path property):
