@@ -43,7 +43,7 @@ public class BrowserBoundary {
 		return albumPersistence.getAlbum(name);
 	}
 
-	public FolderInformation readFolder(Album album, final String path, boolean parent) {
+	public FolderInformation readFolder(Album album, final String path) {
 
 		FolderInformation result = imagePersistence.readFolderInfo(album, path);
 

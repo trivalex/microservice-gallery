@@ -2,7 +2,9 @@ package com.github.tvdtb.mediaresource.browser;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -116,12 +118,34 @@ public class BrowserResource {
 
 	private FolderInformation readItems(Album a, String path, boolean parent) {
 
-		FolderInformation folder = boundary.readFolder(a, path, parent);
+		FolderInformation folder = boundary.readFolder(a, path);
 
 		folder.getFolders().stream().forEach(f -> {
+			String folderPath = concatPath(path, f.getName());
 			f.addLink(Hateoas//
 					.fromMethod(uriInfo, "self", getClass(), "browseFolder", //
-							a.getName(), concatPath(path, f.getName())));
+							a.getName(), folderPath));
+
+			FolderInformation childFolder = boundary.readFolder(a, folderPath);
+			f.setIcons(new LinkedList<>());
+
+			int skip = calculateDelta(childFolder.getImages().size(), 10);
+			AtomicInteger ai = new AtomicInteger();
+
+			childFolder.getImages().stream().filter(ii -> {
+				if (ai.incrementAndGet() < skip) {
+					return false;
+				} else {
+					ai.set(0);
+					return true;
+				}
+			}).map(i -> {
+
+				return Hateoas//
+						.fromMethod(uriInfo, "icon", getClass(), "getMedia", //
+								a.getName(), folderPath, i.getName(), ImageSize.ICON.name());
+			}).forEach(h -> f.getIcons().add(h));
+
 		});
 
 		folder.getImages().forEach(i -> {
@@ -140,6 +164,14 @@ public class BrowserResource {
 		});
 
 		return folder;
+	}
+
+	int calculateDelta(int imageCount, int maxIconCount) {
+		int skip = 0;
+		if (imageCount > 1.5 * maxIconCount) {
+			skip = ((int) ((double) imageCount) / maxIconCount - 1);
+		}
+		return skip;
 	}
 
 	private String concatPath(String path, String name) {
