@@ -14,7 +14,7 @@ public class StreamDtoFileImpl extends StreamDtoRecoverableImpl {
 	private File file;
 
 	public StreamDtoFileImpl(File f, String type) {
-		super(type, f.length(), f.lastModified());
+		super(f.getName(), type, f.length(), f.lastModified());
 		this.file = f;
 	}
 

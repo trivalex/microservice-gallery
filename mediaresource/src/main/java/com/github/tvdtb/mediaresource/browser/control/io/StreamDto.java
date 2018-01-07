@@ -8,8 +8,10 @@ public abstract class StreamDto {
 	String type;
 	private long length;
 	private long date;
+	private String name;
 
-	public StreamDto(String type, long length, long date) {
+	public StreamDto(String name, String type, long length, long date) {
+		this.name = name;
 		this.type = type;
 		this.length = length;
 		this.date = date;
@@ -19,8 +21,8 @@ public abstract class StreamDto {
 		return new StreamDtoFileImpl(f, type);
 	}
 
-	public static StreamDto fromBytes(byte[] data, String type, long lastModified) {
-		return new StreamDtoBytesImpl(data, type, lastModified);
+	public static StreamDto fromBytes(String name, byte[] data, String type, long lastModified) {
+		return new StreamDtoBytesImpl(name, data, type, lastModified);
 	}
 
 	public void mark() {
@@ -43,6 +45,10 @@ public abstract class StreamDto {
 
 	public long getLength() {
 		return length;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

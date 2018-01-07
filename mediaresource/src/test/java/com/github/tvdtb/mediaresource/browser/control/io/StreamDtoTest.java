@@ -12,8 +12,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
-
 public class StreamDtoTest {
 
 	private static byte[] bytes;
@@ -42,7 +40,7 @@ public class StreamDtoTest {
 
 	@Test
 	public void testBytes() throws IOException {
-		StreamDto sr = StreamDto.fromBytes(bytes, "application/octet-stream", -1L);
+		StreamDto sr = StreamDto.fromBytes("bytes", bytes, "application/octet-stream", -1L);
 
 		_testStreamResult(sr);
 

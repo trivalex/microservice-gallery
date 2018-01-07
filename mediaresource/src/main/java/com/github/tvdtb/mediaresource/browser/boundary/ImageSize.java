@@ -36,4 +36,8 @@ public enum ImageSize {
 		return height;
 	}
 
+	@Override
+	public String toString() {
+		return width + "x" + height;
+	}
 }

@@ -339,7 +339,7 @@ public class ImagePersistenceControlFilesystemImpl implements ImagePersistenceCo
 			int bytes = in.read(buffer, 0, buffer.length);
 
 			String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(buffer, 0, bytes));
-			StreamDto result = StreamDto.fromBytes(buffer, type, -1L);
+			StreamDto result = StreamDto.fromBytes("unknown.png", buffer, type, -1L);
 			return result;
 		} catch (IOException e) {
 			if (logger.isErrorEnabled())

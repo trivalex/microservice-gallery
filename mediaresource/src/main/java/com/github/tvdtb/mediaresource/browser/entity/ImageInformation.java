@@ -1,5 +1,7 @@
 package com.github.tvdtb.mediaresource.browser.entity;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.github.tvdtb.mediaresource.rest.HateoasEntity;
@@ -14,6 +16,7 @@ public class ImageInformation extends HateoasEntity {
 	private String dominantColor;
 	private boolean exif;
 	private int thumbnailSize;
+	private Date mediaDate;
 
 	public int getWidth() {
 		return width;
@@ -84,6 +87,14 @@ public class ImageInformation extends HateoasEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Date getMediaDate() {
+		return mediaDate;
+	}
+
+	public void setMediaDate(Date mediaDate) {
+		this.mediaDate = mediaDate;
 	}
 
 }

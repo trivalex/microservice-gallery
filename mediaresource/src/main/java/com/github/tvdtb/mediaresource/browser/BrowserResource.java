@@ -147,6 +147,7 @@ public class BrowserResource {
 			}).forEach(h -> f.getIcons().add(h));
 
 		});
+		folder.getFolders().sort((first, second) -> -1 * first.getName().compareTo(second.getName()));
 
 		folder.getImages().forEach(i -> {
 			i.addLink(Hateoas//
@@ -162,6 +163,8 @@ public class BrowserResource {
 							a.getName(), path, i.getName(), "download"));
 
 		});
+
+		folder.getImages().sort((first, second) -> first.getMediaDate().compareTo(second.getMediaDate()));
 
 		return folder;
 	}

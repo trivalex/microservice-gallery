@@ -6,8 +6,8 @@ public class StreamDtoBytesImpl extends StreamDtoRecoverableImpl {
 
 	private byte[] data;
 
-	public StreamDtoBytesImpl(byte[] data, String type, long lastModified) {
-		super(type, data.length, lastModified);
+	public StreamDtoBytesImpl(String name, byte[] data, String type, long lastModified) {
+		super(name, type, data.length, lastModified);
 		this.data = data;
 	}
 

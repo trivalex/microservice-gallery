@@ -8,6 +8,8 @@ import java.awt.image.ImageObserver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
@@ -105,8 +107,9 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			// if the expected sizes don't match we mark the real size which will cause real
 			// scaling
 			if (Math.abs(expectedThumbWidth - thumbInfo.getWidth()) >= 2) {
-				System.out.println("need to scale " + imageInfo.getName() + " because of illegal height: "
-						+ thumbInfo.getWidth() + " instead of " + expectedThumbWidth);
+				if (logger.isDebugEnabled())
+					logger.debug("need to scale " + imageInfo.getName() + " because of illegal height: "
+							+ thumbInfo.getWidth() + " instead of " + expectedThumbWidth);
 				expectedSize = ImageSize.ICON;
 			}
 
@@ -144,7 +147,7 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				byte[] thumbnail = jpegMetadata.getEXIFThumbnailData();
 				if (thumbnail != null) {
 					String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(thumbnail));
-					return StreamDto.fromBytes(thumbnail, type, -1L);
+					return StreamDto.fromBytes(source.getName() + "-thumb", thumbnail, type, -1L);
 				}
 			}
 			return null;
@@ -159,7 +162,7 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	private StreamDto scaleAndRotate(StreamDto source, int orientation, ImageSize size) {
 		byte[] imageBytes = scaleAndRotate(source.getContent(), orientation, size);
 		String type = mediaType.readMediaTypeFrom(imageBytes[0], imageBytes[1]);
-		StreamDto stream = StreamDto.fromBytes(imageBytes, type, -1L);
+		StreamDto stream = StreamDto.fromBytes(source.getName() + "-" + size, imageBytes, type, -1L);
 		return stream;
 	}
 
@@ -228,6 +231,7 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	public ImageInformation readImageInformation(StreamDto source, ScalingResultConsumer consumer) {
 		ImageInformation result = new ImageInformation();
 		result.setLastmodified(source.getDate());
+		result.setName(source.getName());
 
 		StreamDto thumbStream = null;
 
@@ -246,7 +250,7 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				byte[] thumbnail = jpegMetadata.getEXIFThumbnailData();
 				if (thumbnail != null) {
 					String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(thumbnail));
-					thumbStream = StreamDto.fromBytes(thumbnail, type, -1L);
+					thumbStream = StreamDto.fromBytes(source.getName() + "-thumb", thumbnail, type, -1L);
 					result.setThumbnailSize(thumbnail.length);
 					image = ImageIO.read(new ByteArrayInputStream(thumbnail));
 				}
@@ -255,6 +259,15 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				// Exif is the only source for orientation
 				result.setOrientation(getOrientation(jpegMetadata));
 				TiffImageMetadata exif = jpegMetadata.getExif();
+
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+				String[] exifDateValue = exif.getFieldValue(AllTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL);
+				if (exifDateValue != null) {
+					Date exifDate = sdf.parse(exifDateValue[0]);
+					result.setMediaDate(exifDate);
+				} else {
+					result.setMediaDate(new Date(source.getDate()));
+				}
 
 				Number width = (Number) exif.getFieldValue(AllTagConstants.TIFF_TAG_IMAGE_WIDTH);
 				Number height = (Number) exif.getFieldValue(AllTagConstants.TIFF_TAG_IMAGE_LENGTH);
