@@ -164,8 +164,14 @@ public class BrowserResource {
 
 		});
 
-		folder.getImages().sort((first, second) -> first.getMediaDate().compareTo(second.getMediaDate()));
-
+	/**	folder.
+				getImages().
+				sort((first, second) -> {
+					final Date mediaDate = first.getMediaDate();
+					final Date mediaDate1 = second.getMediaDate();
+					return mediaDate.compareTo(mediaDate1);
+				});
+**/
 		return folder;
 	}
 
