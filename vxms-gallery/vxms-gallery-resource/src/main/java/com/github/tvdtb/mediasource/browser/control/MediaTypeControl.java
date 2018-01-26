@@ -205,7 +205,7 @@
 
 package com.github.tvdtb.mediasource.browser.control;
 
-import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
+import com.github.tvdtb.mediasource.browser.control.io.StreamDto;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

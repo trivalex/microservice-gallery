@@ -205,15 +205,12 @@
 
 package com.github.tvdtb.mediasource.browser.control.io;
 
-import com.github.tvdtb.mediaresource.MediaResource;
+import com.github.tvdtb.mediasource.BrowserResource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class StreamDtoFileImpl extends StreamDtoRecoverableImpl {
-	static Logger logger = LoggerFactory.getLogger(StreamDtoFileImpl.class);
 	private File file;
 
 	public StreamDtoFileImpl(File f, String type) {
@@ -226,10 +223,8 @@ public class StreamDtoFileImpl extends StreamDtoRecoverableImpl {
 		try {
 			return new MultiReadInputStream(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
-			if (logger.isErrorEnabled())
-				logger.error("Exception: {}", e);
 
-			throw MediaResource.handleException(e);
+			throw BrowserResource.handleException(e);
 		}
 	}
 }

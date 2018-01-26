@@ -205,8 +205,8 @@
 
 package com.github.tvdtb.mediasource.browser.entity;
 
-import com.github.tvdtb.mediaresource.rest.HateoasDto;
-import com.github.tvdtb.mediaresource.rest.HateoasEntity;
+import com.github.tvdtb.mediasource.rest.HateoasDto;
+import com.github.tvdtb.mediasource.rest.HateoasEntity;
 import java.util.List;
 
 public class Alba extends HateoasEntity {

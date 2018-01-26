@@ -205,17 +205,13 @@
 
 package com.github.tvdtb.mediasource.browser.control.impl;
 
-import com.github.tvdtb.mediaresource.browser.control.AlbumPersistenceControl;
-import com.github.tvdtb.mediaresource.browser.entity.Album;
-import com.github.tvdtb.mediaresource.config.control.ConfigControl;
 import com.github.tvdtb.mediasource.browser.control.AlbumPersistenceControl;
 import com.github.tvdtb.mediasource.browser.entity.Album;
+import com.github.tvdtb.mediasource.config.control.ConfigControl;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 /**
  * Simple Implementation based on config JSON

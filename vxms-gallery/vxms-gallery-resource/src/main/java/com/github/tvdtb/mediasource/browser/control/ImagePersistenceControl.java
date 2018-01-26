@@ -205,11 +205,11 @@
 
 package com.github.tvdtb.mediasource.browser.control;
 
-import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
-import com.github.tvdtb.mediaresource.browser.entity.Album;
-import com.github.tvdtb.mediaresource.browser.entity.FileItem;
-import com.github.tvdtb.mediaresource.browser.entity.FolderInformation;
-import com.github.tvdtb.mediaresource.browser.entity.ImageInformation;
+import com.github.tvdtb.mediasource.browser.control.io.StreamDto;
+import com.github.tvdtb.mediasource.browser.entity.Album;
+import com.github.tvdtb.mediasource.browser.entity.FileItem;
+import com.github.tvdtb.mediasource.browser.entity.FolderInformation;
+import com.github.tvdtb.mediasource.browser.entity.ImageInformation;
 import java.util.List;
 
 /**

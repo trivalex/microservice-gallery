@@ -251,20 +251,29 @@ public class BrowserResource extends VxmsEndpoint {
 
 
 
-    @Path("/alba/:album/:path")
+    @Path("/alba/:album")
     @GET
     public void browseFolder(RestHandler handler) {
         final String album = handler.request().param("album");
-        String path = handler.request().param("path");
+      /**  String path = handler.request().param("path");
         if (path.endsWith("/"))
             path = path.substring(0, path.length() - 1);
         if (path.startsWith("/"))
             path = path.substring(1);
+**/
+        handler.response().blocking().supply(() ->  boundary.readAlbum(album)).mapToStringResponse((alb) -> {
 
-        handler.response().blocking().supply(() ->  boundary.readAlbum(album))
+
+                return alb.toString();
+        } ).execute();
     }
 
-
+    public static RuntimeException handleException(Exception e) {
+        if (e instanceof RuntimeException)
+            throw (RuntimeException) e;
+        else
+            throw new RuntimeException(e);
+    }
 
     public static void main(String[] args) {
         DeploymentOptions options = new DeploymentOptions().setInstances(1).setConfig(new JsonObject().put("host", "localhost"));

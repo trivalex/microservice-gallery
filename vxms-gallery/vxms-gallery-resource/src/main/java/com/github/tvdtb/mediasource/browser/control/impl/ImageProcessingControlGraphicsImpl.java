@@ -205,12 +205,12 @@
 
 package com.github.tvdtb.mediasource.browser.control.impl;
 
-import com.github.tvdtb.mediaresource.MediaResource;
-import com.github.tvdtb.mediaresource.browser.boundary.ImageSize;
-import com.github.tvdtb.mediaresource.browser.control.ImageProcessingControl;
-import com.github.tvdtb.mediaresource.browser.control.MediaTypeControl;
-import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
-import com.github.tvdtb.mediaresource.browser.entity.ImageInformation;
+import com.github.tvdtb.mediasource.BrowserResource;
+import com.github.tvdtb.mediasource.browser.boundary.ImageSize;
+import com.github.tvdtb.mediasource.browser.control.ImageProcessingControl;
+import com.github.tvdtb.mediasource.browser.control.MediaTypeControl;
+import com.github.tvdtb.mediasource.browser.control.io.StreamDto;
+import com.github.tvdtb.mediasource.browser.entity.ImageInformation;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -236,7 +236,6 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -247,8 +246,6 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	@Inject
 	MediaTypeControl mediaType;
 
-	@Inject
-	Logger logger;
 
 	@Override
 	public void scale(StreamDto source, ImageInformation imageInfo, ImageSize requiredSize,
@@ -286,10 +283,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			StreamDto result = scaleAndRotate(source, imageInfo.getOrientation(), requiredSize);
 			scalingResultConsumer.accept(requiredSize, imageInfo, result);
 		} catch (Exception e) {
-			if (logger.isErrorEnabled())
-				logger.error(LOG_EXCEPTION, e);
 
-			MediaResource.handleException(e);
+			BrowserResource.handleException(e);
 		}
 	}
 
@@ -309,9 +304,6 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			// if the expected sizes don't match we mark the real size which will cause real
 			// scaling
 			if (Math.abs(expectedThumbWidth - thumbInfo.getWidth()) >= 2) {
-				if (logger.isDebugEnabled())
-					logger.debug("need to scale " + imageInfo.getName() + " because of illegal height: "
-							+ thumbInfo.getWidth() + " instead of " + expectedThumbWidth);
 				expectedSize = ImageSize.ICON;
 			}
 
@@ -328,9 +320,7 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 
 			return thumb;
 		} catch (Exception e) {
-			if (logger.isErrorEnabled())
-				logger.error(LOG_EXCEPTION, e);
-			throw MediaResource.handleException(e);
+			throw BrowserResource.handleException(e);
 		}
 
 	}
@@ -354,10 +344,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			}
 			return null;
 		} catch (Exception e) {
-			if (logger.isErrorEnabled())
-				logger.error(LOG_EXCEPTION, e);
 
-			throw MediaResource.handleException(e);
+			throw BrowserResource.handleException(e);
 		}
 	}
 
@@ -418,10 +406,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			byte[] imageBytes = baos.toByteArray();
 			return imageBytes;
 		} catch (Exception e) {
-			if (logger.isErrorEnabled())
-				logger.error(LOG_EXCEPTION, e);
 
-			throw MediaResource.handleException(e);
+			throw BrowserResource.handleException(e);
 		}
 
 	}
@@ -489,10 +475,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			}
 
 		} catch (Exception e) {
-			if (logger.isErrorEnabled())
-				logger.error(LOG_EXCEPTION, e);
 
-			throw MediaResource.handleException(e);
+			throw BrowserResource.handleException(e);
 		}
 
 		if (result.getHeight() == 0) {
@@ -502,10 +486,9 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				result.setWidth(imageInfo.getWidth());
 				result.setHeight(imageInfo.getHeight());
 			} catch (Exception e) {
-				if (logger.isErrorEnabled())
-					logger.error(LOG_EXCEPTION, e);
 
-				throw MediaResource.handleException(e);
+
+				throw BrowserResource.handleException(e);
 			} finally {
 				source.reset();
 			}
@@ -574,8 +557,6 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				}
 			}
 		} catch (Exception e) {
-			if (logger.isErrorEnabled())
-				logger.error(LOG_EXCEPTION, e);
 			return -1;
 		}
 	}

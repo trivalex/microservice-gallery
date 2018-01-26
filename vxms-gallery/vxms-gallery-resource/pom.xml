@@ -15,7 +15,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jacpfx</groupId>
@@ -23,7 +23,7 @@
     <version>${vxms.version}</version>
     <packaging>jar</packaging>
 
-    <name>vxms-spring-demo</name>
+    <name>vxms-gallery-resource</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -33,14 +33,14 @@
         <main.verticle>com.github.tvdtb.mediasource.BrowserResource</main.verticle>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
+
 
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.38</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -68,6 +68,11 @@
             <artifactId>javax.inject</artifactId>
             <version>1</version>
         </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-imaging</artifactId>
+        <version>1.0-R1534292</version>
+      </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -113,5 +118,36 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>http://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>adobe</id>
+            <name>Adobe</name>
+            <url>https://repo.adobe.com/nexus/content/repositories/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
 
+
+    </repositories>
 </project>
