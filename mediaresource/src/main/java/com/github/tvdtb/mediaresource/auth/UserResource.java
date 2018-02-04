@@ -1,6 +1,5 @@
 package com.github.tvdtb.mediaresource.auth;
 
-import java.security.Principal;
 import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -25,9 +24,6 @@ import org.springframework.stereotype.Component;
 import com.github.tvdtb.mediaresource.auth.model.LoginDto;
 import com.github.tvdtb.mediaresource.config.control.ConfigControl;
 import com.github.tvdtb.mediaresource.config.model.SeurityConfig;
-import com.github.tvdtb.mediaresource.rest.Hateoas;
-import com.github.tvdtb.mediaresource.rest.HateoasEntity;
-import com.github.tvdtb.mediaresource.rest.HateoasRegistry;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
@@ -46,9 +42,6 @@ public class UserResource {
 	private SecretKey key;
 
 	@Inject
-	HateoasRegistry hateoas;
-
-	@Inject
 	ConfigControl config;
 
 	@Context
@@ -56,10 +49,6 @@ public class UserResource {
 
 	@PostConstruct
 	public void init() {
-		hateoas.register(UserResource.class, (UriInfo uriInfo, Principal principal, HateoasEntity result) -> {
-			result.addLink(Hateoas.fromMethod(uriInfo, "login", UserResource.class, "login"));
-			result.addLink(Hateoas.fromMethod(uriInfo, "getUser", UserResource.class, "getUser"));
-		});
 
 		SeurityConfig security = config.getConfig().getSecurity();
 		if (security != null) {

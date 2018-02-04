@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import com.github.tvdtb.mediaresource.browser.boundary.ImageSize;
 import com.github.tvdtb.mediaresource.browser.control.MediaTypeControl;
-import com.github.tvdtb.mediaresource.browser.control.impl.ImageProcessingControlGraphicsImpl;
 import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
 import com.github.tvdtb.mediaresource.browser.entity.ImageInformation;
 
@@ -106,7 +105,7 @@ public class ImageProcessingControlGraphicsImplTest {
 	private StreamDto createStreamResult(String imageName) {
 		URL resource = Thread.currentThread().getContextClassLoader().getResource(imageName);
 		File f = new File(resource.getPath());
-		StreamDto source = StreamDto.fromFile(f, "image/jpg");
+		StreamDto source = StreamDto.fromFile(f, "test", "image/jpg");
 		return source;
 	}
 }

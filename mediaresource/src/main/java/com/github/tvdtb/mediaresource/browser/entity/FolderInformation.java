@@ -2,19 +2,37 @@ package com.github.tvdtb.mediaresource.browser.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.tvdtb.mediaresource.rest.HateoasEntity;
-import com.github.tvdtb.mediaresource.rest.HateoasLink;
 
 @JsonInclude(Include.NON_EMPTY)
-public class FolderInformation extends HateoasEntity {
+public class FolderInformation {
+	static final int VERSION = 3;
 
 	private String name;
+	private String path;
+	@JsonIgnore // ignored by Jackson for REST, but not for local Cache/Persistence
+	private int version;
 
 	private List<FolderInformation> folders;
 
-	private List<HateoasLink> _icons;
+	int iconCount;
+
+	public FolderInformation() {
+		version = 0;
+	}
+
+	public FolderInformation(String name, String path) {
+		version = VERSION;
+		this.name = name;
+		this.path = path;
+	}
+
+	@JsonIgnore
+	public boolean isCurrent() {
+		return version == VERSION;
+	}
 
 	private List<ImageInformation> images;
 
@@ -42,12 +60,28 @@ public class FolderInformation extends HateoasEntity {
 		this.name = name;
 	}
 
-	public List<HateoasLink> getIcons() {
-		return _icons;
+	public int getIconCount() {
+		return iconCount;
 	}
 
-	public void setIcons(List<HateoasLink> _icons) {
-		this._icons = _icons;
+	public void setIconCount(int iconCount) {
+		this.iconCount = iconCount;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }

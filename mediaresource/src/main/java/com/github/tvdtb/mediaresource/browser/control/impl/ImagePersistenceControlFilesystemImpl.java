@@ -250,14 +250,14 @@ public class ImagePersistenceControlFilesystemImpl implements ImagePersistenceCo
 	@Override
 	public StreamDto find(Album album, String path, String imageName) {
 		File file = new File(album.getPath(), path + "/" + imageName);
-		return StreamDto.fromFile(file, mediaType.readMediaTypeFrom(file));
+		return StreamDto.fromFile(file, path, mediaType.readMediaTypeFrom(file));
 	}
 
 	@Override
 	public StreamDto findCached(Album album, String path, String imageName, String qualifier) {
 		File f = _findCacheFile(album, path, imageName, qualifier, null);
 		if (f.exists())
-			return StreamDto.fromFile(f, mediaType.readMediaTypeFrom(f));
+			return StreamDto.fromFile(f, path, mediaType.readMediaTypeFrom(f));
 		else
 			return null;
 	}
@@ -339,7 +339,7 @@ public class ImagePersistenceControlFilesystemImpl implements ImagePersistenceCo
 			int bytes = in.read(buffer, 0, buffer.length);
 
 			String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(buffer, 0, bytes));
-			StreamDto result = StreamDto.fromBytes("unknown.png", buffer, type, -1L);
+			StreamDto result = StreamDto.fromBytes("unknown.png", "unknown", buffer, type, -1L);
 			return result;
 		} catch (IOException e) {
 			if (logger.isErrorEnabled())

@@ -6,8 +6,8 @@ public abstract class StreamDtoRecoverableImpl extends StreamDto {
 
 	MultiReadInputStream content;
 
-	public StreamDtoRecoverableImpl(String name, String type, long length, long lastModified) {
-		super(name, type, length, lastModified);
+	public StreamDtoRecoverableImpl(String name, String path, String type, long length, long lastModified) {
+		super(name, path, type, length, lastModified);
 	}
 
 	public void mark(int length) {

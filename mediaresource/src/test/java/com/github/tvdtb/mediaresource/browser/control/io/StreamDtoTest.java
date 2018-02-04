@@ -40,7 +40,7 @@ public class StreamDtoTest {
 
 	@Test
 	public void testBytes() throws IOException {
-		StreamDto sr = StreamDto.fromBytes("bytes", bytes, "application/octet-stream", -1L);
+		StreamDto sr = StreamDto.fromBytes("bytes", "bytes", bytes, "application/octet-stream", -1L);
 
 		_testStreamResult(sr);
 
@@ -48,7 +48,7 @@ public class StreamDtoTest {
 
 	@Test
 	public void testTempFile() throws IOException {
-		StreamDto sr = StreamDto.fromFile(tempFile, "application/octet-stream");
+		StreamDto sr = StreamDto.fromFile(tempFile, "temp", "application/octet-stream");
 
 		_testStreamResult(sr);
 

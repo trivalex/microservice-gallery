@@ -9,20 +9,22 @@ public abstract class StreamDto {
 	private long length;
 	private long date;
 	private String name;
+	private String path;
 
-	public StreamDto(String name, String type, long length, long date) {
+	public StreamDto(String name, String path, String type, long length, long date) {
 		this.name = name;
+		this.path = path;
 		this.type = type;
 		this.length = length;
 		this.date = date;
 	}
 
-	public static StreamDto fromFile(File f, String type) {
-		return new StreamDtoFileImpl(f, type);
+	public static StreamDto fromFile(File f, String path, String type) {
+		return new StreamDtoFileImpl(f, path, type);
 	}
 
-	public static StreamDto fromBytes(String name, byte[] data, String type, long lastModified) {
-		return new StreamDtoBytesImpl(name, data, type, lastModified);
+	public static StreamDto fromBytes(String name, String path, byte[] data, String type, long lastModified) {
+		return new StreamDtoBytesImpl(name, path, data, type, lastModified);
 	}
 
 	public void mark() {
@@ -49,6 +51,10 @@ public abstract class StreamDto {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 }

@@ -4,11 +4,15 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.github.tvdtb.mediaresource.rest.HateoasEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @XmlRootElement
-public class ImageInformation extends HateoasEntity {
+public class ImageInformation {
+	static final int VERSION = 1;
+	@JsonIgnore // ignored by Jackson for REST, but not for local Cache/Persistence
+	int version = 0;
 	private String name;
+	private String path;
 	private int width;
 	private int height;
 	private long lastmodified;
@@ -17,6 +21,20 @@ public class ImageInformation extends HateoasEntity {
 	private boolean exif;
 	private int thumbnailSize;
 	private Date mediaDate;
+
+	public ImageInformation() {
+	}
+
+	public ImageInformation(String name, String path) {
+		version = VERSION;
+		this.name = name;
+		this.path = path;
+	}
+
+	@JsonIgnore
+	public boolean isCurrent() {
+		return version == VERSION;
+	}
 
 	public int getWidth() {
 		return width;
@@ -95,6 +113,14 @@ public class ImageInformation extends HateoasEntity {
 
 	public void setMediaDate(Date mediaDate) {
 		this.mediaDate = mediaDate;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

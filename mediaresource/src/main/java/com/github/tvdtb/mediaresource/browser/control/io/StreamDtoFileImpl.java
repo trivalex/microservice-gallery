@@ -13,8 +13,8 @@ public class StreamDtoFileImpl extends StreamDtoRecoverableImpl {
 	static Logger logger = LoggerFactory.getLogger(StreamDtoFileImpl.class);
 	private File file;
 
-	public StreamDtoFileImpl(File f, String type) {
-		super(f.getName(), type, f.length(), f.lastModified());
+	public StreamDtoFileImpl(File f, String path, String type) {
+		super(f.getName(), path, type, f.length(), f.lastModified());
 		this.file = f;
 	}
 

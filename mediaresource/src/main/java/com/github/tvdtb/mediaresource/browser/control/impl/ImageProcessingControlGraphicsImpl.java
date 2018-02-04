@@ -147,7 +147,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				byte[] thumbnail = jpegMetadata.getEXIFThumbnailData();
 				if (thumbnail != null) {
 					String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(thumbnail));
-					return StreamDto.fromBytes(source.getName() + "-thumb", thumbnail, type, -1L);
+					return StreamDto.fromBytes(source.getName() + "-thumb", source.getPath() + "/thumb", thumbnail,
+							type, -1L);
 				}
 			}
 			return null;
@@ -162,7 +163,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	private StreamDto scaleAndRotate(StreamDto source, int orientation, ImageSize size) {
 		byte[] imageBytes = scaleAndRotate(source.getContent(), orientation, size);
 		String type = mediaType.readMediaTypeFrom(imageBytes[0], imageBytes[1]);
-		StreamDto stream = StreamDto.fromBytes(source.getName() + "-" + size, imageBytes, type, -1L);
+		StreamDto stream = StreamDto.fromBytes(source.getName() + "-" + size, source.getPath() + "/" + size, imageBytes,
+				type, -1L);
 		return stream;
 	}
 
@@ -229,9 +231,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	}
 
 	public ImageInformation readImageInformation(StreamDto source, ScalingResultConsumer consumer) {
-		ImageInformation result = new ImageInformation();
+		ImageInformation result = new ImageInformation(source.getName(), source.getPath());
 		result.setLastmodified(source.getDate());
-		result.setName(source.getName());
 
 		StreamDto thumbStream = null;
 
@@ -250,7 +251,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				byte[] thumbnail = jpegMetadata.getEXIFThumbnailData();
 				if (thumbnail != null) {
 					String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(thumbnail));
-					thumbStream = StreamDto.fromBytes(source.getName() + "-thumb", thumbnail, type, -1L);
+					thumbStream = StreamDto.fromBytes(source.getName() + "-thumb", source.getPath() + "/thumb",
+							thumbnail, type, -1L);
 					result.setThumbnailSize(thumbnail.length);
 					image = ImageIO.read(new ByteArrayInputStream(thumbnail));
 				}

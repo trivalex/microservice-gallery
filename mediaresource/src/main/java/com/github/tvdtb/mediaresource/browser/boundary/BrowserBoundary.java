@@ -47,15 +47,14 @@ public class BrowserBoundary {
 
 		FolderInformation result = imagePersistence.readFolderInfo(album, path);
 
-		if (result == null) {
+		if (result == null || !result.isCurrent()) {
 
 			List<FileItem> fileItems = imagePersistence.readPath(album, path);
 			List<FolderInformation> folders = fileItems.stream()//
 					.filter(fi -> fi instanceof Folder)//
 					.map(fi -> {
 						Folder folder = (Folder) fi;
-						FolderInformation folderInfo = new FolderInformation();
-						folderInfo.setName(folder.getName());
+						FolderInformation folderInfo = new FolderInformation(folder.getName(), folder.getPath());
 						return folderInfo;
 					})//
 					.collect(Collectors.toList());
@@ -67,9 +66,16 @@ public class BrowserBoundary {
 						ImageInformation imageInformation = readImageInformation(album, pf.getPath());
 						imageInformation.setName(pf.getName());
 						return imageInformation;
-					}).collect(Collectors.toList());
+					})//
+					.collect(Collectors.toList());
 
-			result = new FolderInformation();
+			String name = path;
+			int idx = name.lastIndexOf("/");
+			if (idx >= 0) {
+				name = path.substring(idx + 1);
+			}
+
+			result = new FolderInformation(name, path);
 			result.setFolders(folders);
 			result.setImages(images);
 

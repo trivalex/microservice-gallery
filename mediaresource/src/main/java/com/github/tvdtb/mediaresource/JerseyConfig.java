@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.github.tvdtb.mediaresource.auth.UserResource;
 import com.github.tvdtb.mediaresource.browser.BrowserResource;
-import com.github.tvdtb.mediaresource.rest.HateoasResource;
 import com.github.tvdtb.mediaresource.streams.StreamResource;
 
 import io.swagger.jaxrs.config.BeanConfig;
@@ -21,14 +20,11 @@ public class JerseyConfig extends ResourceConfig {
 
 	public JerseyConfig() {
 		register(MultiPartFeature.class);
-		
+
 		// http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html
-		register(HateoasResource.class);
 		register(StreamResource.class);
 		register(BrowserResource.class);
 		register(UserResource.class);
-		
-	
 
 		// http://tech.asimio.net/2016/04/05/Microservices-using-Spring-Boot-Jersey-Swagger-and-Docker.html
 		this.register(ApiListingResource.class);

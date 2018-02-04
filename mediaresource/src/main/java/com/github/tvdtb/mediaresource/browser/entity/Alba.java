@@ -2,12 +2,9 @@ package com.github.tvdtb.mediaresource.browser.entity;
 
 import java.util.List;
 
-import com.github.tvdtb.mediaresource.rest.HateoasDto;
-import com.github.tvdtb.mediaresource.rest.HateoasEntity;
-
-public class Alba extends HateoasEntity {
+public class Alba {
 	String defaultAlbumName;
-	List<HateoasDto<Album>> alba;
+	List<Album> alba;
 
 	public String getDefaultAlbumName() {
 		return defaultAlbumName;
@@ -17,11 +14,11 @@ public class Alba extends HateoasEntity {
 		this.defaultAlbumName = defaultAlbumName;
 	}
 
-	public List<HateoasDto<Album>> getAlba() {
+	public List<Album> getAlba() {
 		return alba;
 	}
 
-	public void setAlba(List<HateoasDto<Album>> alba) {
+	public void setAlba(List<Album> alba) {
 		this.alba = alba;
 	}
 

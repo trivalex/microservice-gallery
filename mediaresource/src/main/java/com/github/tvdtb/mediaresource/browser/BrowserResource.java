@@ -1,23 +1,17 @@
 package com.github.tvdtb.mediaresource.browser;
 
-import java.security.Principal;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.springframework.stereotype.Component;
 
@@ -27,10 +21,6 @@ import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
 import com.github.tvdtb.mediaresource.browser.entity.Alba;
 import com.github.tvdtb.mediaresource.browser.entity.Album;
 import com.github.tvdtb.mediaresource.browser.entity.FolderInformation;
-import com.github.tvdtb.mediaresource.rest.Hateoas;
-import com.github.tvdtb.mediaresource.rest.HateoasDto;
-import com.github.tvdtb.mediaresource.rest.HateoasEntity;
-import com.github.tvdtb.mediaresource.rest.HateoasRegistry;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,29 +34,13 @@ public class BrowserResource {
 	@Inject
 	BrowserBoundary boundary;
 
-	@Inject
-	HateoasRegistry hateoas;
-
-	@Context
-	UriInfo uriInfo;
-
-	@PostConstruct
-	public void init() {
-		hateoas.register(BrowserResource.class, (UriInfo uriInfo, Principal principal, HateoasEntity result) -> {
-			result.addLink(Hateoas.fromMethod(uriInfo, "alba", BrowserResource.class, "getAlba"));
-		});
-		;
-	}
-
 	@ApiOperation(value = "getAlba")
 	@GET
 	@Path("/alba/")
 	public Response getAlba() {
-		List<HateoasDto<Album>> alba = boundary.readAlba().stream() //
-				.map(a -> hateoas(a)) //
+		List<Album> alba = boundary.readAlba().stream() //
 				.collect(Collectors.toList());
 		Alba result = new Alba();
-		result.addLink(Hateoas.fromCaller(uriInfo));
 		result.setAlba(alba);
 		return Response.ok(result).build();
 	}
@@ -81,17 +55,7 @@ public class BrowserResource {
 			throw new NotFoundException("Album: " + album);
 		}
 
-		return Response.ok(hateoas(a)).build();
-	}
-
-	private HateoasDto<Album> hateoas(Album a) {
-		HateoasDto<Album> result = new HateoasDto<Album>(a);
-		result.addLink(Hateoas.fromMethod(uriInfo, "self", BrowserResource.class, "getAlbum", a.getName()));
-		result.addLink(Hateoas.fromMethod(uriInfo, "root", BrowserResource.class, "browseFolder" //
-				, a.getName(), ""));
-		result.addLink(Hateoas.fromMethod(uriInfo, "listAll", BrowserResource.class, "listFolderAll" //
-				, a.getName(), ""));
-		return result;
+		return Response.ok(a).build();
 	}
 
 	@ApiOperation(value = "browseFolder")
@@ -110,7 +74,6 @@ public class BrowserResource {
 		}
 
 		FolderInformation result = readItems(a, path, true);
-		result.addLink(Hateoas.fromCaller(uriInfo, album, path));
 
 		return Response.ok(result).build();
 
@@ -120,58 +83,12 @@ public class BrowserResource {
 
 		FolderInformation folder = boundary.readFolder(a, path);
 
-		folder.getFolders().stream().forEach(f -> {
-			String folderPath = concatPath(path, f.getName());
-			f.addLink(Hateoas//
-					.fromMethod(uriInfo, "self", getClass(), "browseFolder", //
-							a.getName(), folderPath));
+		folder.getFolders()//
+				.sort((first, second) -> //
+		-1 * first.getName()//
+				.compareTo(//
+						second.getName()));
 
-			FolderInformation childFolder = boundary.readFolder(a, folderPath);
-			f.setIcons(new LinkedList<>());
-
-			int skip = calculateDelta(childFolder.getImages().size(), 10);
-			AtomicInteger ai = new AtomicInteger();
-
-			childFolder.getImages().stream().filter(ii -> {
-				if (ai.incrementAndGet() < skip) {
-					return false;
-				} else {
-					ai.set(0);
-					return true;
-				}
-			}).map(i -> {
-
-				return Hateoas//
-						.fromMethod(uriInfo, "icon", getClass(), "getMedia", //
-								a.getName(), folderPath, i.getName(), ImageSize.ICON.name());
-			}).forEach(h -> f.getIcons().add(h));
-
-		});
-		folder.getFolders().sort((first, second) -> -1 * first.getName().compareTo(second.getName()));
-
-		folder.getImages().forEach(i -> {
-			i.addLink(Hateoas//
-					.fromMethod(uriInfo, "icon", getClass(), "getMedia", //
-							a.getName(), path, i.getName(), ImageSize.ICON.name()));
-
-			i.addLink(Hateoas//
-					.fromMethod(uriInfo, "preview", getClass(), "getMedia", //
-							a.getName(), path, i.getName(), ImageSize.PREVIEW.name()));
-
-			i.addLink(Hateoas//
-					.fromMethod(uriInfo, "download", getClass(), "getMedia", //
-							a.getName(), path, i.getName(), "download"));
-
-		});
-
-	/**	folder.
-				getImages().
-				sort((first, second) -> {
-					final Date mediaDate = first.getMediaDate();
-					final Date mediaDate1 = second.getMediaDate();
-					return mediaDate.compareTo(mediaDate1);
-				});
-**/
 		return folder;
 	}
 
