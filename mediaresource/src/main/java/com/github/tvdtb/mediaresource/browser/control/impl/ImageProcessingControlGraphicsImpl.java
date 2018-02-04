@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -49,49 +48,50 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	Logger logger;
 
 	@Override
-	public void scale(StreamDto source, ImageInformation imageInfo, ImageSize requiredSize,
-			ScalingResultConsumer scalingResultConsumer) {
+	public ScalingDTO scale(StreamDto source, ImageInformation imageInfo, ImageSize requiredSize) {
+		if (imageInfo == null)
+			throw new IllegalArgumentException();
 
+		ScalingDTO result = new ScalingDTO();
 		try {
-			AtomicReference<StreamDto> ref = new AtomicReference<StreamDto>(null);
-			// check if Image info is available - if not, read it
-			if (imageInfo == null) {
-				source.mark(METADATA_BUFFER);
-				try {
-					imageInfo = readImageInformation(source, (size, info, icon) -> {
-						ref.set(icon);
-					});
-				} finally {
-					source.reset();
-				}
-			}
+			StreamDto scaled = null;
 
 			if (ImageSize.ICON.equals(requiredSize)) {
-				if (ref.get() == null && imageInfo.getThumbnailSize() > 0) {
+				if (scaled == null && imageInfo.getThumbnailSize() > 0) {
 					StreamDto thumb = extractExifThumbnail(source);
 					// some cameras create thumbnails with borders - or just illegal ones or without
 					// correct rotation
 					thumb = correctThumbnail(source, thumb, imageInfo);
-					ref.set(thumb);
+					scaled = thumb;
 				}
 
-				if (ref.get() != null) {
-					scalingResultConsumer.accept(requiredSize, imageInfo, ref.get());
-					return;
-				}
+			}
+			if (scaled == null) {
+				scaled = scaleAndRotate(source, imageInfo.getOrientation(), requiredSize);
 			}
 
-			StreamDto result = scaleAndRotate(source, imageInfo.getOrientation(), requiredSize);
-			scalingResultConsumer.accept(requiredSize, imageInfo, result);
+			result.size = requiredSize;
+			result.result = scaled;
+			return result;
+
 		} catch (Exception e) {
 			if (logger.isErrorEnabled())
 				logger.error(LOG_EXCEPTION, e);
 
-			MediaResource.handleException(e);
+			throw MediaResource.handleException(e);
 		}
 	}
 
+	/**
+	 * corrects the thumbnail if it's not of the expected size or aspect ratio
+	 * 
+	 * @param source
+	 * @param thumb
+	 * @param imageInfo
+	 * @return
+	 */
 	private StreamDto correctThumbnail(StreamDto source, StreamDto thumb, ImageInformation imageInfo) {
+
 		try {
 			ImageInfo thumbInfo = null;
 			thumb.mark(METADATA_BUFFER);
@@ -106,7 +106,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			int expectedThumbWidth = (int) (thumbInfo.getHeight() * aspectRatio);
 			// if the expected sizes don't match we mark the real size which will cause real
 			// scaling
-			if (Math.abs(expectedThumbWidth - thumbInfo.getWidth()) >= 2) {
+			int widthDifference = expectedThumbWidth - thumbInfo.getWidth();
+			if (Math.abs(widthDifference) >= 2) {
 				if (logger.isDebugEnabled())
 					logger.debug("need to scale " + imageInfo.getName() + " because of illegal height: "
 							+ thumbInfo.getWidth() + " instead of " + expectedThumbWidth);
@@ -118,6 +119,10 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			if (expectedSize != null || imageInfo.getOrientation() != 0) {
 				source.mark(-1);
 				try {
+					if (logger.isInfoEnabled())
+						logger.info("Correcting thumbnail for {} diff={} orientation={}"//
+								, imageInfo.getName(), widthDifference, imageInfo.getOrientation());
+
 					thumb = scaleAndRotate(source, imageInfo.getOrientation(), ImageSize.ICON);
 				} finally {
 					source.reset();
@@ -227,14 +232,8 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 	}
 
 	public ImageInformation readImageInformation(StreamDto source) {
-		return readImageInformation(source, null);
-	}
-
-	public ImageInformation readImageInformation(StreamDto source, ScalingResultConsumer consumer) {
 		ImageInformation result = new ImageInformation(source.getName(), source.getPath());
 		result.setLastmodified(source.getDate());
-
-		StreamDto thumbStream = null;
 
 		BufferedImage image = null;
 		try {
@@ -251,8 +250,6 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				byte[] thumbnail = jpegMetadata.getEXIFThumbnailData();
 				if (thumbnail != null) {
 					String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(thumbnail));
-					thumbStream = StreamDto.fromBytes(source.getName() + "-thumb", source.getPath() + "/thumb",
-							thumbnail, type, -1L);
 					result.setThumbnailSize(thumbnail.length);
 					image = ImageIO.read(new ByteArrayInputStream(thumbnail));
 				}
@@ -311,40 +308,38 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 			}
 		}
 
-		// the image found here is sufficiently small - just calculate the dominant
-		// color
+		// the image found here is sufficiently small
+		// - just calculate the dominant color
 		if (image != null) {
 			String hex = calculateDominantColor(image);
 			result.setDominantColor(hex);
-		}
-		if (consumer != null && thumbStream != null) {
-			thumbStream = correctThumbnail(source, thumbStream, result);
-			consumer.accept(ImageSize.ICON, result, thumbStream);
 		}
 		return result;
 	}
 
 	private String calculateDominantColor(BufferedImage image) {
-		int count = 10;
-		int dx = image.getWidth() / (count + 1);
-		int dy = image.getHeight() / (count + 1);
+		int width = image.getWidth();
+		int height = image.getHeight();
+		if (logger.isInfoEnabled())
+			logger.info("calculate dominant color w={} h={} ", width, height);
 
-		int[] rgbArray = new int[1];
+		int[] rgbArray = new int[width];
 		double r = 0;
 		double g = 0;
 		double b = 0;
-		for (int x = 0; x < count; x++) {
-			for (int y = 0; y < count; y++) {
-				image.getRGB(dx / 2 + x * dx, dy / 2 + dy * y, 1, 1, rgbArray, 0, 1);
-				r += (0x00FF & (rgbArray[0] >> 16));
-				g += (0x00FF & (rgbArray[0] >> 8));
-				b += (0x00FF & (rgbArray[0]));
+		for (int y = 0; y < height; y++) {
+			image.getRGB(0, y, width, 1, rgbArray, 0, width);
+			for (int x = 0; x < width; x++) {
+				r += (0x00FF & (rgbArray[x] >> 16));
+				g += (0x00FF & (rgbArray[x] >> 8));
+				b += (0x00FF & (rgbArray[x]));
 			}
 		}
-		int countSquared = count * count;
-		int averageR = (int) (r / countSquared);
-		int averageG = (int) (g / countSquared);
-		int averageB = (int) (b / countSquared);
+
+		int countPixels = width * height;
+		int averageR = (int) (r / countPixels);
+		int averageG = (int) (g / countPixels);
+		int averageB = (int) (b / countPixels);
 		String hex = "#" + toHexString(averageR) + toHexString(averageG) + toHexString(averageB);
 		return hex;
 	}

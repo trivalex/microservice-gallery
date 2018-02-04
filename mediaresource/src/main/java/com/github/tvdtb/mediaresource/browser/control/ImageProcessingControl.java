@@ -12,12 +12,11 @@ import com.github.tvdtb.mediaresource.browser.entity.ImageInformation;
 public interface ImageProcessingControl {
 	public ImageInformation readImageInformation(StreamDto source);
 
-	void scale(StreamDto source, ImageInformation imageInfo, ImageSize requiredSize,
-			ScalingResultConsumer scalingResultConsumer);
+	public ScalingDTO scale(StreamDto source, ImageInformation imageInfo, ImageSize requiredSize);
 
-	@FunctionalInterface
-	public static interface ScalingResultConsumer {
-		public void accept(ImageSize size, ImageInformation imageInfo, StreamDto result);
+	public static class ScalingDTO {
+		public ImageSize size;
+		public StreamDto result;
 	}
 
 }

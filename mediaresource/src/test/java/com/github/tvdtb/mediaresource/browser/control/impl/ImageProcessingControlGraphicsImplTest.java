@@ -9,14 +9,15 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import com.github.tvdtb.mediaresource.browser.boundary.ImageSize;
+import com.github.tvdtb.mediaresource.browser.control.ImageProcessingControl.ScalingDTO;
 import com.github.tvdtb.mediaresource.browser.control.MediaTypeControl;
 import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
 import com.github.tvdtb.mediaresource.browser.entity.ImageInformation;
@@ -28,6 +29,7 @@ public class ImageProcessingControlGraphicsImplTest {
 	@BeforeClass
 	public static void init() {
 		control = new ImageProcessingControlGraphicsImpl();
+		control.logger = LoggerFactory.getLogger(ImageProcessingControlGraphicsImpl.class.getName());
 		control.mediaType = new MediaTypeControl();
 	}
 
@@ -59,12 +61,8 @@ public class ImageProcessingControlGraphicsImplTest {
 		ImageInformation imageInfo = readImageInfo(imageName);
 		StreamDto source = createStreamResult(imageName);
 
-		AtomicReference<StreamDto> result = new AtomicReference<>(null);
-		control.scale(source, imageInfo, desiredSize, (size, imageInfo2, stream) -> {
-			System.out.println("Scaled " + size + " " + imageInfo2 + " " + stream);
-			result.set(stream);
-		});
-		return result.get();
+		ScalingDTO sdto = control.scale(source, imageInfo, desiredSize);
+		return sdto.result;
 	}
 
 	@Test
@@ -74,7 +72,7 @@ public class ImageProcessingControlGraphicsImplTest {
 		assertThat(imageInfo.getHeight(), equalTo(576));
 		assertThat(imageInfo.isExif(), equalTo(true));
 		assertThat(imageInfo.getOrientation(), equalTo(-1));
-		assertThat(imageInfo.getDominantColor(), equalTo("#66777d"));
+		assertThat(imageInfo.getDominantColor(), equalTo("#657373"));
 	}
 
 	@Test
@@ -84,7 +82,7 @@ public class ImageProcessingControlGraphicsImplTest {
 		assertThat(imageInfo.getHeight(), equalTo(683));
 		assertThat(imageInfo.isExif(), equalTo(true));
 		assertThat(imageInfo.getOrientation(), equalTo(1));
-		assertThat(imageInfo.getDominantColor(), equalTo("#5d6a6c"));
+		assertThat(imageInfo.getDominantColor(), equalTo("#657064"));
 	}
 
 	public void testImageInformationSimple() throws Exception {
@@ -97,7 +95,7 @@ public class ImageProcessingControlGraphicsImplTest {
 
 	private ImageInformation readImageInfo(String imageName) throws Exception {
 		StreamDto source = createStreamResult(imageName);
-		ImageInformation info = control.readImageInformation(source, null);
+		ImageInformation info = control.readImageInformation(source);
 		System.out.println(imageName + " -> " + info);
 		return info;
 	}

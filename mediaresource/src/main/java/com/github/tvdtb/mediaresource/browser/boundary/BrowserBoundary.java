@@ -2,7 +2,6 @@ package com.github.tvdtb.mediaresource.browser.boundary;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.github.tvdtb.mediaresource.browser.control.AlbumPersistenceControl;
 import com.github.tvdtb.mediaresource.browser.control.ImagePersistenceControl;
 import com.github.tvdtb.mediaresource.browser.control.ImageProcessingControl;
+import com.github.tvdtb.mediaresource.browser.control.ImageProcessingControl.ScalingDTO;
 import com.github.tvdtb.mediaresource.browser.control.io.StreamDto;
 import com.github.tvdtb.mediaresource.browser.entity.Album;
 import com.github.tvdtb.mediaresource.browser.entity.FileItem;
@@ -93,44 +93,29 @@ public class BrowserBoundary {
 			, ImageSize desiredSize) throws IOException {
 
 		// try to find the required data in cache
-		StreamDto result = imagePersistence.findCached(album, path, imageName, desiredSize.name());
-		if (result != null) {
-			return result;
+		StreamDto cachedResult = imagePersistence.findCached(album, path, imageName, desiredSize.name());
+		if (cachedResult != null) {
+			return cachedResult;
 		}
 
 		// find resource itself
-		result = imagePersistence.find(album, path, imageName);
-		if (result == null)
+		StreamDto original = imagePersistence.find(album, path, imageName);
+		if (original == null)
 			throw new NotFoundException(path + " " + imageName);
 
-		AtomicReference<ImageInformation> imageInfo = new AtomicReference<>(
-				imagePersistence.readImageInfo(album, path, imageName));
-		AtomicReference<StreamDto> reference = new AtomicReference<StreamDto>(null);
+		ImageInformation imageInfo = imagePersistence.readImageInfo(album, path, imageName);
 
 		// if found, scale it and save data to cache
-		imageProcessing.scale(result, imageInfo.get(), desiredSize, (size, newImageInfo, streamResult) -> {
-			// this is our result
-			if (size.equals(desiredSize))
-				reference.set(streamResult);
-			// write Image Info if it was changed/created
-			if (!newImageInfo.equals(imageInfo.get())) {
-				imagePersistence.writeImageInfo(album, path, imageName, newImageInfo);
-				imageInfo.set(newImageInfo);
-			}
-			// write scaled image to cache
-			streamResult.mark();
-			try {
-				imagePersistence.writeCache(album, path, imageName, desiredSize.name(), streamResult);
-			} finally {
-				streamResult.reset();
-			}
-		});
+		ScalingDTO scaled = imageProcessing.scale(original, imageInfo, desiredSize);
+		StreamDto streamResult = scaled.result;
+		streamResult.mark();
+		try {
+			imagePersistence.writeCache(album, path, imageName, desiredSize.name(), streamResult);
+		} finally {
+			streamResult.reset();
+		}
 
-		// at least some image - this will not be cached
-		if ((result = reference.get()) == null)
-			result = imagePersistence.getUnknown();
-
-		return result;
+		return streamResult;
 	}
 
 	public ImageInformation readImageInformation(Album album, String path) {

@@ -154,18 +154,27 @@ public class ImagePersistenceControlFilesystemImpl implements ImagePersistenceCo
 			String newExt = "json";
 			File cacheFile = _findCacheFile(album, path, ".folder", qualifier, newExt);
 			if (cacheFile.exists()) {
-				try (FileInputStream fis = new FileInputStream(cacheFile)) {
-					StringBuffer sb = new StringBuffer();
-					BufferedReader r = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
-					char[] chars = new char[1024];
-					int count = 0;
-					while ((count = r.read(chars)) >= 0) {
-						sb.append(chars, 0, count);
-					}
+				long lastmodifiedCacheFile = cacheFile.lastModified();
+				File dir = new File(album.getPath(), path);
+				boolean exists = dir.exists();
+				boolean cacheOutdated = dir.lastModified() > lastmodifiedCacheFile;
+				if (!exists || (exists && cacheOutdated))
+					result = null;
+				else {
+					try (FileInputStream fis = new FileInputStream(cacheFile)) {
+						StringBuffer sb = new StringBuffer();
+						BufferedReader r = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
+						char[] chars = new char[1024];
+						int count = 0;
+						while ((count = r.read(chars)) >= 0) {
+							sb.append(chars, 0, count);
+						}
 
-					result = JSON.parseObject(sb.toString(), FolderInformation.class);
-					return result;
+						result = JSON.parseObject(sb.toString(), FolderInformation.class);
+						return result;
+					}
 				}
+
 			}
 			return result;
 		} catch (Exception e) {
