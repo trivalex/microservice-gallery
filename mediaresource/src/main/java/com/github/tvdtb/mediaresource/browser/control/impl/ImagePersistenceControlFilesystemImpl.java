@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.imaging.util.IoUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -362,6 +363,21 @@ public class ImagePersistenceControlFilesystemImpl implements ImagePersistenceCo
 	public StreamDto find(Album album, String path) {
 		String[] split = splitPath(path);
 		return find(album, split[0], split[1]);
+	}
+
+	@Override
+	public void writeImage(Album album, String targetPath, StreamDto streamDto) {
+		try {
+			File file = new File(album.getPath(), targetPath + "/" + streamDto.getName());
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				try (FileOutputStream fos = new FileOutputStream(file)) {
+					IoUtils.copyStreamToStream(streamDto.getContent(), fos);
+				}
+			}
+		} catch (Exception e) {
+			MediaResource.handleException(e);
+		}
 	}
 
 }

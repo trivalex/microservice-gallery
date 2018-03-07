@@ -1,6 +1,8 @@
 package com.github.tvdtb.mediaresource.browser.boundary;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,6 +128,21 @@ public class BrowserBoundary {
 			imagePersistence.writeImageInfo(album, path, result);
 		}
 		return result;
+	}
+
+	public String writeImage(String albumName, StreamDto streamDto) {
+		ImageInformation imageInformation = imageProcessing.readImageInformation(streamDto);
+
+		Date mediaDate = imageInformation.getMediaDate();
+		if (mediaDate != null && mediaDate.getTime() > 0) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy'/'yyyyMMdd");
+			String targetPath = sdf.format(mediaDate);
+
+			Album album = albumPersistence.getAlbum(albumName);
+			imagePersistence.writeImage(album, targetPath, streamDto);
+			return targetPath;
+		} else
+			return null;
 	}
 
 }

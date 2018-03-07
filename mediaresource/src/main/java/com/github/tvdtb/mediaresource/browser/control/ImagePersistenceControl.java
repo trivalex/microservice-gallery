@@ -38,4 +38,6 @@ public interface ImagePersistenceControl {
 
 	FolderInformation readFolderInfo(Album album, String path);
 
+	void writeImage(Album album, String path, StreamDto streamDto);
+
 }

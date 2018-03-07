@@ -249,7 +249,6 @@ public class ImageProcessingControlGraphicsImpl implements ImageProcessingContro
 				result.setExif(true);
 				byte[] thumbnail = jpegMetadata.getEXIFThumbnailData();
 				if (thumbnail != null) {
-					String type = mediaType.readMediaTypeFrom(new ByteArrayInputStream(thumbnail));
 					result.setThumbnailSize(thumbnail.length);
 					image = ImageIO.read(new ByteArrayInputStream(thumbnail));
 				}
