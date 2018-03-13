@@ -1,0 +1,33 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Upload</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      Upload, supports ZIP and JPEG.
+      <br/>
+      <br/>
+    </ion-row>
+    <ion-row>
+      <form ngNoForm method="POST" action="api/streams/{{album.name}}/*" enctype="multipart/form-data">
+        Target Album:
+        <select labelText="Album" [(ngModel)]="selectedAlbum" ngDefaultControl>
+          <option *ngFor="let album of alba" [ngValue]="album">{{album.name}}</option>
+        </select>
+        <br/>
+        <input type="file" name="file" />
+        <br/>
+        <input type="submit" />
+      </form>
+
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>

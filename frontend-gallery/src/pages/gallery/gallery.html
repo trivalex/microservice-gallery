@@ -1,0 +1,34 @@
+<ion-content padding class="gallery image" [attr.style]="sanitizer.bypassSecurityTrustStyle(itemCssVariable(item))">
+    <!-- https://forum.ionicframework.com/t/swipe-doesnt-work-in-android-devices-and-chrome-emulator/80378/3 -->
+    <div class="gallery-content" 
+         (swipe)="swipeEvent($event)">
+    </div>
+
+    <!-- div class="half"></div -->
+
+    <div class="gallery-action gallery-info" (click)="previous()">
+        <ion-icon name="information-circle"></ion-icon>
+        {{item.name}}<br/> 
+        {{item.width}}x{{item.height}} <br/>
+        {{item.orientation}}
+    </div>
+    <div class="gallery-action gallery-left" (click)="previous()" *ngIf="hasPrevious">
+        <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    <div class="gallery-action gallery-right" (click)="next()" *ngIf="hasNext">
+        <ion-icon name="arrow-forward"></ion-icon>
+    </div>
+
+    <!--div class="gallery-center" *ngIf="loading">
+    </div -->
+
+    <div id="bottom" class="gallery-action gallery-bottom no-scroll" [attr.style]="sanitizer.bypassSecurityTrustStyle(bottomCssVariable())">
+        <div class="icons">
+            <img [src]="item.imageLinks.icon" *ngFor="let item of folder.images; let index = index" (click)="selectBottom(item, index)">
+        </div>
+    </div>
+
+    <div class="gallery-dispose" (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+    </div>
+</ion-content>

@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      <span *ngIf="album == null">
+            Alben
+          </span>
+      <span *ngIf="album != null">
+      <span (click)="breadcrumbTappedAlbum($event, album)">
+        {{album.name}}
+      </span>
+      </span>
+
+      <span *ngFor="let folder of breadcrumb" (click)="breadcrumbTapped($event, folder)">
+            | {{folder.name}}
+      </span>
+    </ion-title>
+
+    <ion-buttons end>
+        <button ion-button icon-only color="royal" *ngIf="!userService.loggedIn" (click)="login()">
+            <ion-icon name="person-add"></ion-icon>
+        </button>
+        
+      <button ion-button icon-only color="royal"  *ngIf="userService.loggedIn"  (click)="login()">
+          <ion-icon name="person"></ion-icon>
+          {{userService.user.username}}
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid *ngIf="counters.all &gt; 0">
+    <ion-row>
+      <ion-spinner name="bubbles"></ion-spinner>
+    </ion-row>
+  </ion-grid>
+
+  <ion-list *ngIf="alba!=null">
+    <ion-item *ngFor="let album of alba" (click)="albumTapped($event, album)">
+      <ion-avatar item-start>
+        <ion-icon name="albums"></ion-icon>
+        &nbsp; {{album.name}}
+      </ion-avatar>
+    </ion-item>
+  </ion-list>
+
+  <ion-list class="folder" *ngIf="folder!=null">
+    <ion-item *ngFor="let folder of folder.folders" (click)="folderTapped($event, folder)">
+      <ion-avatar item-start>
+        <ion-icon name="folder"></ion-icon>
+        &nbsp; {{folder.name}}
+      </ion-avatar>
+      <div style="display: inline-block; vertical-align: middle; overflow: hidden;max-height: 40px;max-width: 1000px;">
+        <img *ngFor="let icon of folderIcons(folder)" class="miniicon" [src]="icon">
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-grid *ngIf="folder!=null">
+    <ion-row #iconrow [attr.style]="sanitizer.bypassSecurityTrustStyle(iconRowCssVariable())">
+      <div class="icon" *ngFor="let item of folder.images" (click)="fileItemTapped($event, item)" [style.width.px]="item.view.width"
+        [style.height.px]="item.view.height" [title]="item.name" [attr.style]="sanitizer.bypassSecurityTrustStyle(itemCssVariable(item))">
+      </div>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="isEmpty() &amp;&amp; counters.all==0">
+    <ion-row>
+      TODO    Keine Daten
+    </ion-row>
+  </ion-grid>
+
+
+
+
+</ion-content>

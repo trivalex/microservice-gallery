@@ -1,0 +1,69 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    <ion-title>
+      User
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+
+<ion-content padding>
+  <ion-card *ngIf="!userService.loggedIn">
+
+    <ion-card-header>
+      Login
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+
+        <ion-item>
+          <ion-label floating>Username</ion-label>
+          <ion-input type="text" [(ngModel)]="username"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label floating>Password</ion-label>
+          <ion-input type="password" [(ngModel)]="password"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <button ion-button (click)="login()">
+                LOGIN
+            </button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+
+  </ion-card>
+
+
+  <ion-card *ngIf="userService.loggedIn">
+
+    <ion-card-header>
+      Angemeldet als ...
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+
+        <ion-item>
+          {{ userService.user.username}}
+        </ion-item>
+
+        <ion-item>
+          <button ion-button (click)="logoff()">
+                LOGOFF
+          </button>
+        </ion-item>
+
+      </ion-list>
+    </ion-card-content>
+
+  </ion-card>
+
+</ion-content>

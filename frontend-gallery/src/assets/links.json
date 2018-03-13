@@ -1,0 +1,14 @@
+{
+    "_links": {
+        "alba":{"method":"GET","href":"/media/api/browser/alba/"}
+        , "getUser":{"method":"GET","href":"/media/api/user"}
+        , "login":{"method":"PUT","href":"/media/api/user/login"}
+
+        , "albumRoot":{"method":"GET","href":"/media/api/browser/alba/{album}/"}
+        , "folder":{"method":"GET","href":"/media/api/browser/alba/{album}/{folderPath}/"}
+
+        , "imageIcon":{"method":"GET","href":"/media/api/browser/alba/{album}/{imagePath}/{image}/ICON"}
+        , "imagePreview":{"method":"GET","href":"/media/api/browser/alba/{album}/{imagePath}/{image}/PREVIEW"}
+        
+    }
+}

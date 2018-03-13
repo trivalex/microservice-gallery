@@ -1,0 +1,154 @@
+page-gallery {
+    ion-content {
+        background-color: black;
+    }
+
+    /* https://www.sitepoint.com/css3-transform-background-image/ */
+    ion-content.image:before {
+        content: "";
+        position: absolute;
+        top: 0px; bottom: 0px; // 15 required by element
+        left: 0px; right: 0px; // additional 3 for desired margin
+    
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+    
+        background-image: var(--image);
+        // Bilder werden auf dem Server gedreht, da "background-size: contain" und "transform: rotate()" nicht zusammen funktionieren
+        // Bei Rotate wird die maximale Breite als Höhe verwendet (wegen rotate)
+        //transform: var(--rotate); 
+
+
+        transition: background-image 0.4s ease-in-out;    
+        -webkit-transition: background-image 0.4s ease-in-out;
+    }
+
+    div.gallery-content {
+        position: absolute;
+        top: 0px; bottom: 0px; // 15 required by element
+        left: 0px; right: 0px; // additional 3 for desired margin
+
+    }
+
+    div.gallery-action {
+        opacity: 0;
+        ion-icon {
+            font-size: 2em;
+            color: gray;
+        }
+    }
+
+    div.gallery-action:hover {
+        opacity: 1;
+    }
+
+    div.gallery-info {
+        position: absolute;
+        top: 0px;
+        left:30%;
+        right:30%;
+        height: 8%;
+        color: gray;
+        ion-icon {
+            position: absolute;
+            top: 0px;
+            left: 50%;
+            font-size: 2em;
+            color: gray;
+        }
+    }
+
+    div.gallery-info:hover {
+        opacity: 1;
+        background-color: black;
+    }
+
+    div.gallery-dispose {
+        position: absolute;
+        right:10px;
+        top: 0px;
+        ion-icon {
+            font-size: 3em;
+            color: gray;
+        }
+    }
+
+    div.gallery-left {
+        position: absolute;
+        left:0px;
+        top: 0px;
+        bottom: 0px;
+        width: 15%;
+        ion-icon {
+            position: absolute;
+            left:0px;
+            top: 50%;
+            font-size: 5em;
+        }            
+    }
+
+    div.gallery-center {
+        position: absolute;
+        top: 45%;
+        left: 45%;
+        width: 10%;
+        height: 10%;
+        font-size: 2em;
+        color: white;
+    }
+    div.gallery-right {
+        position: absolute;
+        right:0px;
+        top: 0px;
+        bottom: 0px;
+        width: 15%;
+        ion-icon {
+            position: absolute;
+            right:0px;
+            top: 50%;
+            font-size: 5em;
+        }            
+    }
+
+    div.gallery-bottom {
+        position: absolute;
+        right:0px;
+        left: 0px;
+        bottom: 0px;
+        height: 84px;
+        overflow-x: scroll;
+        overflow-y: hidden;
+
+       div.icons {
+            width: var(--width);
+            height: 84px;
+
+            img {
+                margin: 2px;
+                width: auto;
+                height: auto;
+                max-width: 80px;
+                max-height: 80px;
+                vertical-align: middle;
+            }
+            z-index: 10;
+        }   
+
+
+    }
+    div.half {
+        background-color: red;
+        position: absolute;
+        top: 30px;
+        left: 0px;
+        bottom: 0px;
+        width: 50%;
+        z-index: 0;
+        
+    }
+
+}
+
+page-gallery { background-color: black;}
+

@@ -6,8 +6,48 @@
 	<artifactId>microservice-gallery</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<properties>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+	</properties>
+
 	<modules>
 		<module>mediaresource</module>
 	</modules>
+
+
+	<scm>
+		<developerConnection>scm:git:git@dockervm:default-user/default-project.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>http://dockervm/nexus/repository/maven-snapshots/</url>
+		</snapshotRepository>
+
+		<repository>
+			<id>nexus-releases</id>
+			<url>http://dockervm/nexus/repository/maven-releases/</url>
+		</repository>
+
+	</distributionManagement>
 
 </project>
